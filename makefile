@@ -13,4 +13,4 @@ lab3: lab3.o
 lab6: lab6/lab6
 
 start_lab6:
-	./lab6/lab6 $(_i) $(_p) 
+	./lab6/lab6 $(__p_1) $(__p_2)
