@@ -5,3 +5,6 @@ lab3.o: lab3/lab3.c
 
 lab3: lab3.o
 	gcc lab3/lab3.c -o lab3
+
+lab6: lab6/lab6
+
