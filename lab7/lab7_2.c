@@ -100,7 +100,7 @@ static void testChild1(int signo)
     {
         kill(getppid(), SIGTERM);
     }
-    if (ch != '\0')
+    if (status != 0)
     {
         printf("\x1b[33mCHILD 1: %c\x1b[37m\n", ch);
         fprintf(fout1, "%c", ch);
@@ -116,7 +116,7 @@ static void testChild2(int signo)
     {
         kill(getppid(), SIGTERM);
     }
-    if (ch != '\0')
+    if (status != 0)
     {
         printf("\x1b[34mCHILD 2: %c\x1b[37m\n", ch);
         fprintf(fout2, "%c", ch);
