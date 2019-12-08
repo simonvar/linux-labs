@@ -1,5 +1,11 @@
-lab4: lab4.o
-	gcc lab4.o
+lab4_1: lab4_1.o
+	gcc lab4_1.o
 
-lab4.o: lab4.c
-	gcc -c -o lab4.o lab4.c
+lab4_1.o: lab4_1.c
+	gcc -c -o lab4_1.o lab4_1.c
+
+lab4_2: lab4_2.o
+	gcc lab4_2.o
+
+lab4_2.o: lab4_2.c
+	gcc -c -o lab4_2.o lab4_2.c
