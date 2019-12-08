@@ -6,13 +6,14 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
+#define OUTPUT_FILE "out_1.log"
 
 int main(int argc, char* argv[])
 {
 
-    if (argc < 3)
+    if (argc < 2)
     {
-        printf("Ошибка. Программа должна принимать 3 аргумента\n");
+        printf("Ошибка. Программа должна принимать 2 аргумента\n");
     }
 
     int pipedes[2];
@@ -20,7 +21,7 @@ int main(int argc, char* argv[])
     __pid_t child_id_2;
     pipe2(pipedes, O_NONBLOCK);
     FILE *fout;
-    fout = fopen(argv[3], "w");
+    fout = fopen(OUTPUT_FILE, "w");
     if((child_id_1 = fork()) == 0) 
     {
         FILE *fin1 = fopen(argv[1], "r");
