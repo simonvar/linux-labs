@@ -23,12 +23,12 @@ static pid_t  pid_child1, pid_child2;
 static int fildes[2];
 static FILE *fout1, *fout2;
 
-static void parentSIGUSR1(int);
-static void parentSIGUSR2(int);
-static void parentSIGTERM(int);
+static void parent_sigusr1(int);
+static void parent_sigusr2(int);
+static void parent_sigterm(int);
 static void test_child(int);
-static void childFirstExit(int);
-static void childSecondExit(int);
+static void child_first_exit(int);
+static void child_second_exit(int);
 
 int main(int argc, char *argv[])
 {
@@ -42,16 +42,16 @@ int main(int argc, char *argv[])
     pipe(fildes);
     fcntl(fildes[0], F_SETFL, O_NONBLOCK);
 
-    signal(SIGUSR1, parentSIGUSR1);
-    signal(SIGUSR2, parentSIGUSR2);
-    signal(SIGTERM, parentSIGTERM);
+    signal(SIGUSR1, parent_sigusr1);
+    signal(SIGUSR2, parent_sigusr2);
+    signal(SIGTERM, parent_sigterm);
 
     pid_child1 = fork();
     if (!pid_child1)
     {
         printf("\x1b[33;1mСhild 1 started\x1b[37;0m\n");
         signal(SIGUSR1, test_child);
-        signal(SIGTERM, childFirstExit);
+        signal(SIGTERM, child_first_exit);
         fout1 = fopen(FILE_NAME_OUTPUT_CHILD_1, "w");
         while(true);
     }
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     {
         printf("\x1b[34m\x1b[1mChild 2 started\x1b[37;0m\n");
         signal(SIGUSR2, test_child);
-        signal(SIGTERM, childSecondExit);
+        signal(SIGTERM, child_second_exit);
         fout2 = fopen(FILE_NAME_OUTPUT_CHILD_2, "w");
         while(true);
     }
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     fclose(fin);
 
     sleep(2);
-    parentSIGUSR1(0);
+    parent_sigusr1(0);
     int status;
     waitpid(pid_child1, &status, 0);
     waitpid(pid_child2, &status, 0);
@@ -86,17 +86,17 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-static void parentSIGUSR1(int signo)
+static void parent_sigusr1(int signo)
 {
     kill(pid_child1, SIGUSR1);
 }
 
-static void parentSIGUSR2(int signo)
+static void parent_sigusr2(int signo)
 {
     kill(pid_child2, SIGUSR2);
 }
 
-static void parentSIGTERM(int signo)
+static void parent_sigterm(int signo)
 {
     kill(pid_child1, SIGTERM);
     kill(pid_child2, SIGTERM);
@@ -134,13 +134,13 @@ static void test_child(int signo)
     kill(getppid(), out_signo);
 }
 
-static void childFirstExit(int signo)
+static void child_first_exit(int signo)
 {
     fclose(fout1);
     _exit(0);
 }
 
-static void childSecondExit(int signo)
+static void child_second_exit(int signo)
 {
     fclose(fout2);
     _exit(0);
