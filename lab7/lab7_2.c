@@ -8,6 +8,11 @@
 #define true 1
 #define false 0
 
+#define FILE_NAME_OUTPUT_CHILD_1    "child_1.log"
+#define FILE_NAME_OUTPUT_CHILD_2    "child_2.log"
+
+// TODO: Сделать возможность прописывать аргументом куда положить файл
+
 static pid_t  pid_child1, pid_child2;
 static int fildes[2];
 static FILE *fout1, *fout2;
@@ -23,9 +28,9 @@ static void childSecondExit(int);
 int main(int argc, char *argv[])
 {
 
-    if (argc < 3)
+    if (argc < 2)
 	{
-        printf("Ошибка. Программа должна принимать два аргумента\n");
+        printf("Ошибка. Программа должна принимать один аргумента: имя входного файла\n");
         return 1;
     }
 
@@ -42,7 +47,7 @@ int main(int argc, char *argv[])
         printf("\x1b[33;1mСhild 1 started\x1b[37;0m\n");
         signal(SIGUSR1, testChild1);
         signal(SIGTERM, childFirstExit);
-        fout1 = fopen(argv[2], "w");
+        fout1 = fopen(FILE_NAME_OUTPUT_CHILD_1, "w");
         while(true);
     }
 
@@ -52,7 +57,7 @@ int main(int argc, char *argv[])
         printf("\x1b[34;1mChild 2 started\x1b[37;0m\n");
         signal(SIGUSR2, testChild2);
         signal(SIGTERM, childSecondExit);
-        fout2 = fopen(argv[3], "w");
+        fout2 = fopen(FILE_NAME_OUTPUT_CHILD_2, "w");
         while(true);
     }
 
