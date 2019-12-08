@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     pid_child1 = fork();
     if (!pid_child1)
     {
-        printf("\x1b[33;1mСhild 1 started\x1b[37;0m\n");
+        printf(YELLOW_TEXT_COLOR BOLD_FONT "Сhild 1 started"WHITE_TEXT_COLOR NORMAL_FONT"\n");
         signal(SIGUSR1, test_child);
         signal(SIGTERM, child_first_exit);
         fout1 = fopen(FILE_NAME_OUTPUT_CHILD_1, "w");
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     pid_child2 = fork();
     if (!pid_child2)
     {
-        printf("\x1b[34m\x1b[1mChild 2 started\x1b[37;0m\n");
+        printf(BLUE_TEXT_COLOR BOLD_FONT "Child 2 started"WHITE_TEXT_COLOR NORMAL_FONT"\n");
         signal(SIGUSR2, test_child);
         signal(SIGTERM, child_second_exit);
         fout2 = fopen(FILE_NAME_OUTPUT_CHILD_2, "w");
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     while (fgets(str, sizeof(str), fin) != NULL)
     {
         write(fildes[1], str, sizeof(str));
-        strcpy(str, "");
+        // strcpy(str, "");
     }
     fclose(fin);
 
@@ -109,17 +109,20 @@ static void test_child(int signo)
     FILE *output_file;
     int out_signo;
     const char *text_color;
+    int number_child;
     if (signo == SIGUSR1)
     {
         output_file = fout1;
         out_signo = SIGUSR2;
-        text_color = BLUE_TEXT_COLOR;
+        text_color = YELLOW_TEXT_COLOR;
+        number_child = 1;
     }
     else
     {
         output_file = fout2;
         out_signo = SIGUSR1;
-        text_color = YELLOW_TEXT_COLOR;
+        text_color = BLUE_TEXT_COLOR;
+        number_child = 2;
     }
     
     if (status == -1)
@@ -128,7 +131,7 @@ static void test_child(int signo)
     }
     if (status != 0)
     {
-        printf("%sCHILD 1: %c%s\n", text_color, ch, WHITE_TEXT_COLOR);
+        printf("%sCHILD %d: %c%s\n", text_color, number_child, ch, WHITE_TEXT_COLOR);
         fprintf(output_file, "%c", ch);
     }
     kill(getppid(), out_signo);
