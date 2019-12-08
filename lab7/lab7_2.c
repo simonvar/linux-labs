@@ -71,7 +71,6 @@ int main(int argc, char *argv[])
     while (fgets(str, sizeof(str), fin) != NULL)
     {
         write(fildes[1], str, sizeof(str));
-        // strcpy(str, "");
     }
     fclose(fin);
 
