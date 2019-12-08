@@ -26,7 +26,7 @@ static FILE *fout1, *fout2;
 static void parentSIGUSR1(int);
 static void parentSIGUSR2(int);
 static void parentSIGTERM(int);
-static void testChild(int);
+static void test_child(int);
 static void childFirstExit(int);
 static void childSecondExit(int);
 
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     if (!pid_child1)
     {
         printf("\x1b[33;1mСhild 1 started\x1b[37;0m\n");
-        signal(SIGUSR1, testChild);
+        signal(SIGUSR1, test_child);
         signal(SIGTERM, childFirstExit);
         fout1 = fopen(FILE_NAME_OUTPUT_CHILD_1, "w");
         while(true);
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     if (!pid_child2)
     {
         printf("\x1b[34m\x1b[1mChild 2 started\x1b[37;0m\n");
-        signal(SIGUSR2, testChild);
+        signal(SIGUSR2, test_child);
         signal(SIGTERM, childSecondExit);
         fout2 = fopen(FILE_NAME_OUTPUT_CHILD_2, "w");
         while(true);
@@ -102,7 +102,7 @@ static void parentSIGTERM(int signo)
     kill(pid_child2, SIGTERM);
 }
 
-static void testChild(int signo)
+static void test_child(int signo)
 {
     char ch;
     int status = read(fildes[0], &ch, sizeof(ch));
