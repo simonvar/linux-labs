@@ -11,6 +11,12 @@
 #define FILE_NAME_OUTPUT_CHILD_1    "child_1.log"
 #define FILE_NAME_OUTPUT_CHILD_2    "child_2.log"
 
+#define BLUE_TEXT_COLOR             "\x1b[34m"
+#define YELLOW_TEXT_COLOR           "\x1b[33m"
+#define WHITE_TEXT_COLOR            "\x1b[37m"
+
+#define BOLD_FONT                   "\x1b[1m"
+#define NORMAL_FONT                 "\x1b[0m"
 // TODO: Сделать возможность прописывать аргументом куда положить файл
 
 static pid_t  pid_child1, pid_child2;
@@ -20,8 +26,7 @@ static FILE *fout1, *fout2;
 static void parentSIGUSR1(int);
 static void parentSIGUSR2(int);
 static void parentSIGTERM(int);
-static void testChild1(int);
-static void testChild2(int);
+static void testChild(int);
 static void childFirstExit(int);
 static void childSecondExit(int);
 
@@ -45,7 +50,7 @@ int main(int argc, char *argv[])
     if (!pid_child1)
     {
         printf("\x1b[33;1mСhild 1 started\x1b[37;0m\n");
-        signal(SIGUSR1, testChild1);
+        signal(SIGUSR1, testChild);
         signal(SIGTERM, childFirstExit);
         fout1 = fopen(FILE_NAME_OUTPUT_CHILD_1, "w");
         while(true);
@@ -54,8 +59,8 @@ int main(int argc, char *argv[])
     pid_child2 = fork();
     if (!pid_child2)
     {
-        printf("\x1b[34;1mChild 2 started\x1b[37;0m\n");
-        signal(SIGUSR2, testChild2);
+        printf("\x1b[34m\x1b[1mChild 2 started\x1b[37;0m\n");
+        signal(SIGUSR2, testChild);
         signal(SIGTERM, childSecondExit);
         fout2 = fopen(FILE_NAME_OUTPUT_CHILD_2, "w");
         while(true);
@@ -97,36 +102,36 @@ static void parentSIGTERM(int signo)
     kill(pid_child2, SIGTERM);
 }
 
-static void testChild1(int signo)
+static void testChild(int signo)
 {
     char ch;
     int status = read(fildes[0], &ch, sizeof(ch));
+    FILE *output_file;
+    int out_signo;
+    const char *text_color;
+    if (signo == SIGUSR1)
+    {
+        output_file = fout1;
+        out_signo = SIGUSR2;
+        text_color = BLUE_TEXT_COLOR;
+    }
+    else
+    {
+        output_file = fout2;
+        out_signo = SIGUSR1;
+        text_color = YELLOW_TEXT_COLOR;
+    }
+    
     if (status == -1)
     {
         kill(getppid(), SIGTERM);
     }
     if (status != 0)
     {
-        printf("\x1b[33mCHILD 1: %c\x1b[37m\n", ch);
-        fprintf(fout1, "%c", ch);
+        printf("%sCHILD 1: %c%s\n", text_color, ch, WHITE_TEXT_COLOR);
+        fprintf(output_file, "%c", ch);
     }
-    kill(getppid(), SIGUSR2);
-}
-
-static void testChild2(int signo)
-{
-    char ch;
-    int status = read(fildes[0], &ch, sizeof(ch));
-    if (status == -1)
-    {
-        kill(getppid(), SIGTERM);
-    }
-    if (status != 0)
-    {
-        printf("\x1b[34mCHILD 2: %c\x1b[37m\n", ch);
-        fprintf(fout2, "%c", ch);
-    }
-    kill(getppid(), SIGUSR1);
+    kill(getppid(), out_signo);
 }
 
 static void childFirstExit(int signo)
