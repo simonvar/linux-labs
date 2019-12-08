@@ -68,8 +68,8 @@ int main(int argc, char *argv[])
     sleep(2);
     parentSIGUSR1(0);
     int status;
-    wait(&status);
-    wait(&status);
+    waitpid(pid_child1, &status, 0);
+    waitpid(pid_child2, &status, 0);
 
     close(fildes[0]);
     close(fildes[1]);
