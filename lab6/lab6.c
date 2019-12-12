@@ -13,6 +13,7 @@
 
 static int iterations = 0;
 static int count = 0;
+static bool run_fl = true;
 
 void handler(int);
 void output(bool);
@@ -41,11 +42,16 @@ int main(int argc, char* argv[])
     struct itimerval timer;
     timer.it_value.tv_sec = interval;
     timer.it_value.tv_usec = 0;
-    timer.it_interval.tv_sec = 0;
+    timer.it_interval.tv_sec = interval;
     timer.it_interval.tv_usec = 0;
     setitimer(ITIMER_REAL, &timer, NULL);
 
-    while (1);
+    while (run_fl)
+    {
+        pause();
+    }
+
+    return 0;
 }
 
 void handler(int signo)
@@ -60,7 +66,7 @@ void handler(int signo)
     output(true);
     count++;
     if(count >= iterations)
-        _exit(0);
+        run_fl = false;
 }
 
 void output(bool isParent)
