@@ -29,6 +29,8 @@ static void parent_sigterm(int);
 static void test_child(int);
 static void child_first_exit(int);
 static void child_second_exit(int);
+static void child1_sigusr1(int signo);
+static void child1_sigusr2(int signo);
 
 int main(int argc, char *argv[])
 {
@@ -41,10 +43,9 @@ int main(int argc, char *argv[])
 
     pipe(fildes);
     fcntl(fildes[0], F_SETFL, O_NONBLOCK);
-
-    // signal(SIGUSR1, parent_sigusr1);
-    // signal(SIGUSR2, parent_sigusr2);
-    signal(SIGTERM, parent_sigterm);
+    printf("%d\n", getpid());
+    signal(SIGUSR1, parent_sigusr1);
+    signal(SIGUSR2, parent_sigusr2);
 
     pid_child1 = fork();
     if (!pid_child1)
@@ -66,6 +67,7 @@ int main(int argc, char *argv[])
         while(true);
     }
 
+    signal(SIGTERM, parent_sigterm);
     FILE* fin = fopen(argv[1], "r");
     char str[255] = "";
     while (fgets(str, sizeof(str), fin) != NULL)
@@ -75,12 +77,10 @@ int main(int argc, char *argv[])
     fclose(fin);
 
     sleep(2);
-    // parent_sigusr1(0);
-    kill(0, SIGUSR2);
+    kill(-getpid(), SIGUSR1);
     int status;
     waitpid(pid_child1, &status, 0);
     waitpid(pid_child2, &status, 0);
-
     close(fildes[0]);
     close(fildes[1]);
     return 0;
@@ -88,12 +88,12 @@ int main(int argc, char *argv[])
 
 static void parent_sigusr1(int signo)
 {
-    kill(pid_child1, SIGUSR1);
+    // printf("Parent siguser 1\n");
 }
 
 static void parent_sigusr2(int signo)
 {
-    kill(pid_child2, SIGUSR2);
+    // printf("Parent siguser 2\n");
 }
 
 static void parent_sigterm(int signo)
@@ -134,17 +134,19 @@ static void test_child(int signo)
         printf("%sCHILD %d: %c%s\n", text_color, number_child, ch, WHITE_TEXT_COLOR);
         fprintf(output_file, "%c", ch);
     }
-    kill(0 , out_signo);
+    kill(-getppid(), out_signo);
 }
 
 static void child_first_exit(int signo)
 {
     fclose(fout1);
+    printf("child_first_exit\n");
     _exit(0);
 }
 
 static void child_second_exit(int signo)
 {
     fclose(fout2);
+    printf("child_second_exit\n");
     _exit(0);
 }
