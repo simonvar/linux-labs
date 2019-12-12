@@ -42,8 +42,8 @@ int main(int argc, char *argv[])
     pipe(fildes);
     fcntl(fildes[0], F_SETFL, O_NONBLOCK);
 
-    signal(SIGUSR1, parent_sigusr1);
-    signal(SIGUSR2, parent_sigusr2);
+    // signal(SIGUSR1, parent_sigusr1);
+    // signal(SIGUSR2, parent_sigusr2);
     signal(SIGTERM, parent_sigterm);
 
     pid_child1 = fork();
@@ -75,7 +75,8 @@ int main(int argc, char *argv[])
     fclose(fin);
 
     sleep(2);
-    parent_sigusr1(0);
+    // parent_sigusr1(0);
+    kill(0, SIGUSR2);
     int status;
     waitpid(pid_child1, &status, 0);
     waitpid(pid_child2, &status, 0);
@@ -126,14 +127,14 @@ static void test_child(int signo)
     
     if (status == -1)
     {
-        kill(getppid(), SIGTERM);
+        kill(-getppid(), SIGTERM);
     }
     if (status != 0)
     {
         printf("%sCHILD %d: %c%s\n", text_color, number_child, ch, WHITE_TEXT_COLOR);
         fprintf(output_file, "%c", ch);
     }
-    kill(getppid(), out_signo);
+    kill(0 , out_signo);
 }
 
 static void child_first_exit(int signo)

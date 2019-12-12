@@ -57,8 +57,6 @@ int main(int argc, char* argv[])
     char ch;
     int buff;
 
-    waitpid(child_id_1, NULL, 0);
-    waitpid(child_id_2, NULL, 0);
 
     while ((buff = read(pipedes[0], &ch, sizeof(ch))) > 0)
     {
@@ -66,6 +64,9 @@ int main(int argc, char* argv[])
         fprintf(fout, "%c", ch);
     }
 
+    waitpid(child_id_1, NULL, 0);
+    waitpid(child_id_2, NULL, 0);
+    
     printf("\n");
 
     int status;
