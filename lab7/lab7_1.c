@@ -1,25 +1,33 @@
 #include <stdio.h>
-
-#define __USE_GNU
 #include <unistd.h>
-
+#include <signal.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <poll.h>
+
+#define BLUE_TEXT_COLOR             "\x1b[34m"
+#define YELLOW_TEXT_COLOR           "\x1b[33m"
+#define WHITE_TEXT_COLOR            "\x1b[37m"
 
 #define OUTPUT_FILE "out_1.log"
+#define printf //
+static void close_zipper(int signo);
+
+static int __counter = 0;
+static int pipedes[2];
 
 int main(int argc, char* argv[])
 {
 
-    if (argc < 2)
+    if (argc < 3)
     {
         printf("Ошибка. Программа должна принимать 2 аргумента\n");
     }
 
-    int pipedes[2];
+    signal(SIGUSR1, close_zipper);    
     __pid_t child_id_1;
     __pid_t child_id_2;
-    pipe2(pipedes, O_NONBLOCK);
+    pipe(pipedes);    
     FILE *fout;
     fout = fopen(OUTPUT_FILE, "w");
     if((child_id_1 = fork()) == 0) 
@@ -32,6 +40,7 @@ int main(int argc, char* argv[])
             if (ch != EOF)
                 write(pipedes[1], &ch, 1);
         }
+        kill(getppid(), SIGUSR1);
         fclose(fin1);
         _exit(0);
     }
@@ -45,35 +54,38 @@ int main(int argc, char* argv[])
             {
                 ch = fgetc(fin2);
                 if (ch != EOF)
-
-                write(pipedes[1], &ch, 1);
+                    write(pipedes[1], &ch, 1);
             }
             fclose(fin2);
+            kill(getppid(), SIGUSR1);
             _exit(0);
         }
     }
 
-    // fcntl(pipedes[0], F_SETFL, O_NONBLOCK);
     char ch;
     int buff;
-
-
     while ((buff = read(pipedes[0], &ch, sizeof(ch))) > 0)
     {
         printf("%c", ch);
         fprintf(fout, "%c", ch);
     }
-
-    waitpid(child_id_1, NULL, 0);
-    waitpid(child_id_2, NULL, 0);
+    printf("Darova\n");
     
     printf("\n");
 
-    int status;
-    wait(&status);
-    wait(&status);
     fclose(fout);
     close(pipedes[0]);
-    close(pipedes[1]);
+
     return 0;
+}
+
+static void close_zipper(int signo)
+{
+    printf(YELLOW_TEXT_COLOR"close_zipper\n"WHITE_TEXT_COLOR);
+    __counter++;
+    if (__counter == 2)
+    {
+        printf("Poka\n");
+        close(pipedes[1]);
+    }
 }

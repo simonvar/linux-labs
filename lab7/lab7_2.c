@@ -7,7 +7,7 @@
 
 #define true 1
 #define false 0
-
+#define printf //
 #define FILE_NAME_OUTPUT_CHILD_1    "child_1.log"
 #define FILE_NAME_OUTPUT_CHILD_2    "child_2.log"
 
@@ -98,8 +98,7 @@ static void parent_sigusr2(int signo)
 
 static void parent_sigterm(int signo)
 {
-    kill(pid_child1, SIGTERM);
-    kill(pid_child2, SIGTERM);
+    kill(-getpid(), SIGTERM);
 }
 
 static void test_child(int signo)
