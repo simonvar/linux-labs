@@ -10,7 +10,7 @@
 #define WHITE_TEXT_COLOR            "\x1b[37m"
 
 #define OUTPUT_FILE "out_1.log"
-#define printf //
+
 static void close_zipper(int signo);
 
 static int __counter = 0;
@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 
     if (argc < 3)
     {
-        printf("Ошибка. Программа должна принимать 2 аргумента\n");
+        printf("Ошибка. Программа должна принимать 2 аргумента. Имена входных файлов.\n");
     }
 
     signal(SIGUSR1, close_zipper);    
@@ -66,12 +66,8 @@ int main(int argc, char* argv[])
     int buff;
     while ((buff = read(pipedes[0], &ch, sizeof(ch))) > 0)
     {
-        printf("%c", ch);
         fprintf(fout, "%c", ch);
     }
-    printf("Darova\n");
-    
-    printf("\n");
 
     fclose(fout);
     close(pipedes[0]);
@@ -81,11 +77,9 @@ int main(int argc, char* argv[])
 
 static void close_zipper(int signo)
 {
-    printf(YELLOW_TEXT_COLOR"close_zipper\n"WHITE_TEXT_COLOR);
     __counter++;
     if (__counter == 2)
     {
-        printf("Poka\n");
         close(pipedes[1]);
     }
 }

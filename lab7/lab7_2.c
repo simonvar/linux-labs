@@ -7,7 +7,6 @@
 
 #define true 1
 #define false 0
-#define printf //
 #define FILE_NAME_OUTPUT_CHILD_1    "child_1.log"
 #define FILE_NAME_OUTPUT_CHILD_2    "child_2.log"
 
@@ -50,7 +49,7 @@ int main(int argc, char *argv[])
     pid_child1 = fork();
     if (!pid_child1)
     {
-        printf(YELLOW_TEXT_COLOR BOLD_FONT "Сhild 1 started"WHITE_TEXT_COLOR NORMAL_FONT"\n");
+        // printf(YELLOW_TEXT_COLOR BOLD_FONT "Сhild 1 started"WHITE_TEXT_COLOR NORMAL_FONT"\n");
         signal(SIGUSR1, test_child);
         signal(SIGTERM, child_first_exit);
         fout1 = fopen(FILE_NAME_OUTPUT_CHILD_1, "w");
@@ -60,7 +59,7 @@ int main(int argc, char *argv[])
     pid_child2 = fork();
     if (!pid_child2)
     {
-        printf(BLUE_TEXT_COLOR BOLD_FONT "Child 2 started"WHITE_TEXT_COLOR NORMAL_FONT"\n");
+        // printf(BLUE_TEXT_COLOR BOLD_FONT "Child 2 started"WHITE_TEXT_COLOR NORMAL_FONT"\n");
         signal(SIGUSR2, test_child);
         signal(SIGTERM, child_second_exit);
         fout2 = fopen(FILE_NAME_OUTPUT_CHILD_2, "w");
@@ -88,12 +87,12 @@ int main(int argc, char *argv[])
 
 static void parent_sigusr1(int signo)
 {
-    // printf("Parent siguser 1\n");
+
 }
 
 static void parent_sigusr2(int signo)
 {
-    // printf("Parent siguser 2\n");
+
 }
 
 static void parent_sigterm(int signo)
@@ -130,7 +129,7 @@ static void test_child(int signo)
     }
     if (status != 0)
     {
-        printf("%sCHILD %d: %c%s\n", text_color, number_child, ch, WHITE_TEXT_COLOR);
+        // printf("%sCHILD %d: %c%s\n", text_color, number_child, ch, WHITE_TEXT_COLOR);
         fprintf(output_file, "%c", ch);
     }
     kill(-getppid(), out_signo);
@@ -139,13 +138,11 @@ static void test_child(int signo)
 static void child_first_exit(int signo)
 {
     fclose(fout1);
-    printf("child_first_exit\n");
     _exit(0);
 }
 
 static void child_second_exit(int signo)
 {
     fclose(fout2);
-    printf("child_second_exit\n");
     _exit(0);
 }
