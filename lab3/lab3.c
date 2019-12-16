@@ -1,28 +1,37 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <errno.h>
 
 void write_process_info(const char* filename, const char* tag);
 
 int main(int argc, char* argv[]) {
+
+    if (argc < 5) {
+        puts("Аргументы: путь к файлу, задержка для родительского процесса, задержка для fork, задержка для vfork.");
+        return EINVAL;
+    }
+
 	// clear file
 	FILE* fp = fopen(argv[1], "w");
 	fclose(fp);
 
-	write_process_info(argv[1], "PARENT");
-
 	if (fork() == 0) {
-		sleep(3);
+		sleep(atoi(argv[3]));
 		write_process_info(argv[1], "CHILD 1");
 		_exit(0);
 	}
 
 	if (vfork() == 0) {
-		sleep(3);
-		write_process_info(argv[1], "CHILD 2");
-		_exit(0);
+        execv("/home/simon/linux-labs/lab3/lab3_ex.out", argv);
+		puts("Невозможно запустить процесс lab3_ex.");
+		_exit(ENOENT);
 	}
 
-	return 0;
+	sleep(atoi(argv[2]));
+    write_process_info(argv[1], "PARENT");
+
+    return 0;
 }
 
 void write_process_info(const char* filename, const char* tag) {
