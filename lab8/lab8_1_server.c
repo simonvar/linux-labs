@@ -1,81 +1,91 @@
-#include <stdio.h>
-#include <string.h>
-#include <sys/ipc.h>
+#include <errno.h>
 #include <sys/msg.h>
-#include <signal.h>
 #include <sys/time.h>
+#include <sys/signal.h>
+#include <fcntl.h>
+
+#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
-#include "massage.h"
-
-#define bool        int
-#define true        1
-#define false       0
 
 
-static int id_server;
+typedef struct message {
+    long type;
+    int new_timer_interval;
+} message_t;
 
-static void end_server(int);
-static void stop_server_by_timer(int);
+#define true 1
+#define false 0
+
+// void timer_handler(int);
+void create_timer(int timeout);
+
+int messagequeue_id;
 
 int main(int argc, char* argv[])
 {
-    struct MESSAGE message;
+    int timeout;
 
-    id_server = msgget(IPC_SET, 0600 | IPC_CREAT); // Есть ощущение что 0600 - O_EXCL | O_NOCTTY - но почему они не понятно
-    if (id_server == -1)
+    timeout = atoi(argv[1]);
+    printf("Input timeout (seconds): %d\n", timeout);
+
+    static const key_t queue_key = 121;
+    int queue_id = msgget(queue_key, 0662 | IPC_CREAT);
+    messagequeue_id = queue_id;
+    if (queue_id == -1)
     {
-        printf("Ошибка. Не удалось создать очередь\n");
-        return 1;
+        printf("Failed to create queue!\n");
+        printf("Error code: %d\n", errno);
+        _exit(1);
     }
 
-    signal(SIGINT, end_server);
-    signal(SIGALRM, stop_server_by_timer);
+    printf("Queue Id: %d\n", queue_id);
+    printf("Waiting for message...\n");
 
-    struct itimerval tval;
-    tval.it_interval.tv_sec = atoi(argv[1]);
-    tval.it_interval.tv_usec = 0;
-    tval.it_value.tv_sec = atoi(argv[1]);
-    tval.it_value.tv_usec = 0;
-    setitimer(ITIMER_REAL, &tval, NULL);
-
-    bool messageReceive = false;
-    while(1)
+    while (true)
     {
-        int status = msgrcv(id_server, &message, sizeof(message), 0, IPC_NOWAIT);
-        if (status > 0)
+        create_timer(timeout);
+
+        message_t received_message;
+        long message_type = 42;
+        
+        int receiving_result = msgrcv(queue_id, &received_message, sizeof(message_t), message_type, 0);
+
+        if (receiving_result == -1) 
         {
-            if (!messageReceive)
-            {
-                tval.it_interval.tv_sec = 0;
-                tval.it_value.tv_sec = 0;
-                setitimer(ITIMER_REAL, &tval, NULL);
-                messageReceive = true;
-            }
-            printf("Получено сообщение: %s | таймаут: %d sec\n", message.msg, message.timeout);
-            sleep(message.timeout);
+            printf("Error reding message. Error code: %d\n", errno);
+            exit(1);
         }
-        else if (status == -1 && messageReceive)
-        {
-            end_server(0);
-        }
+
+        printf("Message received:\n");
+        timeout = received_message.new_timer_interval;
+        printf("New interval: %d s\n", timeout);
     }
+
+    return 0;
 }
 
-static void end_server(int signo)
+void timer_handler(int value) 
 {
-    msgctl(id_server, IPC_RMID, NULL);
-    raise(SIGKILL);
+    printf("Time up! Exiting...\n");
+    int msqid = messagequeue_id;
+    printf("Queue to close: %d\n", msqid);
+    int operation_result = msgctl(msqid, IPC_RMID, NULL);
+    if (operation_result == -1) {
+        printf("Error deleting queue. Error code: %d\n", errno); 
+    }
+    exit(1);
 }
 
-static void stop_server_by_timer(int signo)
-{
-    printf("Программа завершена по таймеру\n");
-    msgctl(id_server, IPC_RMID, NULL);
-    raise(SIGKILL);
+void create_timer(int timeout) {
+    setitimer(ITIMER_REAL, NULL, NULL);
+    struct itimerval value;
+    value.it_interval.tv_sec = timeout;
+    value.it_value.tv_sec = timeout;
+
+    struct itimerval ovalue;
+    signal(SIGALRM, &timer_handler);
+    alarm(timeout);
+    // setitimer(ITIMER_REAL, &value, &ovalue);
 }

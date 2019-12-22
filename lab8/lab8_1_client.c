@@ -1,40 +1,45 @@
 #include <stdio.h>
+
 #include <sys/msg.h>
-#include <string.h>
-#include <signal.h>
+#include <errno.h>
 #include <stdlib.h>
 
-#include "massage.h"
 
-
-void stop_client();
+typedef struct message {
+    long type;
+    int new_timer_interval;
+} message_t;
 
 int main(int argc, char* argv[])
 {
-    int id_server = msgget(IPC_SET, IPC_EXCL);
-    if (id_server == -1)
-    {
-        stop_client();
+    static const key_t queue_key = 121;
+    int queue_id = msgget(queue_key, 0662);
+
+    if (queue_id == -1) {
+        printf("Queue does not exist yet! Exiting...\n");
+        exit(1);
     }
 
-    id_server = msgget(1, IPC_CREAT);
-    if (id_server == -1)
+    printf("Queue Id: %d\n", queue_id);
+
+    int new_timeout;
+    new_timeout = atoi(argv[1]);
+    printf("Input NEW timeout (seconds): %d\n", new_timeout);
+
+    long message_type = 42;
+    message_t message = 
     {
-        msgctl(id_server, IPC_RMID, NULL);
-        stop_client();
+        .type = message_type, 
+        .new_timer_interval = new_timeout
+    };
+    int operation_result = msgsnd(queue_id, &message, sizeof(message_t), 0);
+
+    if (operation_result == -1) {
+        printf("Error. Message not sent\n");
+        printf("Errno: %d\n", errno);
+    } else {
+        printf("Message sent!\n");
     }
 
-    struct MESSAGE message;
-    strcpy(message.msg, "test message");
-    message.timeout = atoi(argv[1]);
-
-    msgsnd(id_server, &message, sizeof(struct MESSAGE), 0);
-    printf("Отправлено сообщение: %s| timeout: %d sec\n", message.msg, message.timeout);
     return 0;
-}
-
-static void stop_client()
-{
-    printf("Ошибка. Не удалось установить связь с сервером\n");
-    raise(SIGKILL);
 }
