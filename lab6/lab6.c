@@ -11,9 +11,6 @@
 #define false 0
 #define true 1
 
-static int iterations = 0;
-static int count = 0;
-
 void handler(int);
 void output(bool);
 void stopProgram(int);
@@ -29,23 +26,28 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    iterations = atoi((const char*)argv[1]);
+    int iterations = atoi((const char*)argv[1]);
     int interval = atoi((const char*)argv[2]);
 
     printf("Iterations: %d | Interval: %d\n", iterations, interval);
 
-    signal(SIGTSTP, stopProgram);
+    signal(SIGTSTP, SIG_IGN);
     signal(SIGALRM, handler);
 
 
     struct itimerval timer;
     timer.it_value.tv_sec = interval;
     timer.it_value.tv_usec = 0;
-    timer.it_interval.tv_sec = 0;
+    timer.it_interval.tv_sec = interval;
     timer.it_interval.tv_usec = 0;
     setitimer(ITIMER_REAL, &timer, NULL);
 
-    while (1);
+    for(int i = 0; i < iterations; i++)
+    {
+        pause();
+    }
+
+    return 0;
 }
 
 void handler(int signo)
@@ -58,9 +60,6 @@ void handler(int signo)
     }
     waitpid(childPid, NULL, 0);
     output(true);
-    count++;
-    if(count >= iterations)
-        _exit(0);
 }
 
 void output(bool isParent)
@@ -75,9 +74,4 @@ void output(bool isParent)
 	{
         _exit(0);
 	}
-}
-
-void stopProgram(int signum)
-{
-    printf("Подождите пока программа завершится\n");
 }
