@@ -23,8 +23,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (vfork() == 0) {
-        execv("/home/simon/linux-labs/lab3/lab3_ex.out", argv);
-		puts("Невозможно запустить процесс lab3_ex.");
+        execv("lab3_ex.out", argv);
+		puts("Невозможно запустить процесс lab3_ex.out");
 		_exit(ENOENT);
 	}
 
