@@ -1,9 +1,11 @@
+#define __USE_POSIX
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
 #include <string.h>
 #include <fcntl.h>
+
 
 #define true 1
 #define false 0
@@ -22,8 +24,6 @@ static pid_t  pid_child1, pid_child2;
 static int fildes[2];
 static FILE *fout1, *fout2;
 
-static void parent_sigusr1(int);
-static void parent_sigusr2(int);
 static void parent_sigterm(int);
 static void test_child(int);
 static void child_first_exit(int);
@@ -42,15 +42,16 @@ int main(int argc, char *argv[])
 
     pipe(fildes);
     fcntl(fildes[0], F_SETFL, O_NONBLOCK);
-    printf("%d\n", getpid());
-    signal(SIGUSR1, parent_sigusr1);
-    signal(SIGUSR2, parent_sigusr2);
 
     pid_child1 = fork();
     if (!pid_child1)
     {
-        // printf(YELLOW_TEXT_COLOR BOLD_FONT "Сhild 1 started"WHITE_TEXT_COLOR NORMAL_FONT"\n");
+        // struct sigaction sig;
+        // sig.sa_handler = SIG_IGN;
+        // sigaction(SIGUSR2, &sig, &sig);
+        printf(YELLOW_TEXT_COLOR BOLD_FONT "Сhild 1 started"WHITE_TEXT_COLOR NORMAL_FONT"\n");
         signal(SIGUSR1, test_child);
+        signal(SIGUSR2, SIG_IGN);
         signal(SIGTERM, child_first_exit);
         fout1 = fopen(FILE_NAME_OUTPUT_CHILD_1, "w");
         while(true);
@@ -59,13 +60,22 @@ int main(int argc, char *argv[])
     pid_child2 = fork();
     if (!pid_child2)
     {
-        // printf(BLUE_TEXT_COLOR BOLD_FONT "Child 2 started"WHITE_TEXT_COLOR NORMAL_FONT"\n");
+
+        printf(BLUE_TEXT_COLOR BOLD_FONT "Child 2 started"WHITE_TEXT_COLOR NORMAL_FONT"\n");
+        signal(SIGUSR1, SIG_IGN);
         signal(SIGUSR2, test_child);
         signal(SIGTERM, child_second_exit);
         fout2 = fopen(FILE_NAME_OUTPUT_CHILD_2, "w");
         while(true);
     }
 
+    struct sigaction sig1;
+    struct sigaction sig2;
+    sig1.sa_handler = SIG_IGN;
+    sig2.sa_handler = SIG_IGN;
+    sigaction(SIGUSR2, &sig1, &sig1);
+    sigaction(SIGUSR1, &sig2, &sig2);
+    
     signal(SIGTERM, parent_sigterm);
     FILE* fin = fopen(argv[1], "r");
     char str[255] = "";
@@ -85,19 +95,10 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-static void parent_sigusr1(int signo)
-{
-
-}
-
-static void parent_sigusr2(int signo)
-{
-
-}
-
 static void parent_sigterm(int signo)
 {
-    kill(-getpid(), SIGTERM);
+    kill(pid_child1, SIGTERM);
+    kill(pid_child2, SIGTERM);
 }
 
 static void test_child(int signo)
@@ -123,13 +124,13 @@ static void test_child(int signo)
         number_child = 2;
     }
     
-    if (status == -1)
+    if ((status == -1) || (ch == '\0'))
     {
-        kill(-getppid(), SIGTERM);
+        kill(getppid(), SIGTERM);
     }
     if (status != 0)
     {
-        // printf("%sCHILD %d: %c%s\n", text_color, number_child, ch, WHITE_TEXT_COLOR);
+        printf("%sCHILD %d: %c%s\n", text_color, number_child, ch, WHITE_TEXT_COLOR);
         fprintf(output_file, "%c", ch);
     }
     kill(-getppid(), out_signo);
@@ -137,12 +138,14 @@ static void test_child(int signo)
 
 static void child_first_exit(int signo)
 {
+    printf("kill first");
     fclose(fout1);
     _exit(0);
 }
 
 static void child_second_exit(int signo)
 {
+    printf("kill second");
     fclose(fout2);
     _exit(0);
 }
