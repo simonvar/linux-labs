@@ -10,3 +10,9 @@ lab8_1_client: lab8_1_client.o
 lab8_1_client.o: lab8_1_client.c
 	gcc -c -o lab8_1_client.o lab8_1_client.c
 
+lab8_2: lab8_2.o
+	gcc -o lab8_2.out lab8_2.o
+
+lab8_2.o: lab8_2.c
+	gcc -c -o lab8_2.o lab8_2.c
+

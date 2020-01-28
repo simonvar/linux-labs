@@ -2,9 +2,9 @@
 #define MASSAGE_H_  1
 
 
-struct MESSAGE {
-    char msg[255];
-    int timeout;
-};
+typedef struct message {
+    long type;
+    int new_timer_interval;
+} message_t;
 
 #endif /* MASSAGE_H_ */

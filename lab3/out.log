@@ -1,0 +1,18 @@
+PARENT: pid - 12580
+PARENT: parent pid - 12538
+PARENT: session id - 12538
+PARENT: group id - 12580
+PARENT: real user id - 1000
+PARENT: effective user id - 1000
+PARENT: group id - 1000
+PARENT: effective group id - 1000
+
+CHILD 1: pid - 12581
+CHILD 1: parent pid - 1091
+CHILD 1: session id - 12538
+CHILD 1: group id - 12580
+CHILD 1: real user id - 1000
+CHILD 1: effective user id - 1000
+CHILD 1: group id - 1000
+CHILD 1: effective group id - 1000
+

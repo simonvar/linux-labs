@@ -4,11 +4,8 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include "massage.h"
 
-typedef struct message {
-    long type;
-    int new_timer_interval;
-} message_t;
 
 int main(int argc, char* argv[])
 {

@@ -5,6 +5,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/types.h>
 #include <string.h>
 
 #define bool int
@@ -56,7 +57,7 @@ void handler(int signo)
     if(!childPid)
 	{
         output(false);
-        return;
+        _exit(0);
     }
     waitpid(childPid, NULL, 0);
     output(true);
@@ -70,8 +71,4 @@ void output(bool isParent)
     char* format = "%d.%B.%Y %H:%M:%S";
     strftime(buffer, sizeof(buffer), format, timeinfo);
     printf("%s PID: %d TIME: %s\n", (isParent ? "Parent." : "Child."), getpid(), buffer);
-    if (!isParent)
-	{
-        _exit(0);
-	}
 }

@@ -9,7 +9,7 @@ void handler_ptr(int signum);
 int main(int argc, char* argv[]) {
 
     if (argc <= 1) {
-        puts("Не задан тип ошибки");
+        puts("Не задан тип ошибки (SIGFPE SIGSEGV)");
         return 0;
     }
 

@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/paladirka/Документы/linux-labs/Lab_9/Part_1/lab_9_1.cpp
+unistd.h
+-
+sys/shm.h
+-
+sys/time.h
+-
+errno.h
+-
+csignal
+-
+fstream
+-
+iostream
+-
+string
+-
+queue
+-
+

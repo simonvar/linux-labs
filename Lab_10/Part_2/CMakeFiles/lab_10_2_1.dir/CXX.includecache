@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/paladirka/Документы/linux-labs/Lab_10/Part_2/lab_10_2_1.cpp
+iostream
+-
+string
+-
+fstream
+-
+unistd.h
+-
+sys/sem.h
+-
+sem_helpers.h
+/home/paladirka/Документы/linux-labs/Lab_10/Part_2/sem_helpers.h
+
+/home/paladirka/Документы/linux-labs/Lab_10/Part_2/sem_helpers.cpp
+sem_helpers.h
+/home/paladirka/Документы/linux-labs/Lab_10/Part_2/sem_helpers.h
+sys/types.h
+-
+sys/ipc.h
+-
+
+/home/paladirka/Документы/linux-labs/Lab_10/Part_2/sem_helpers.h
+sys/sem.h
+-
+

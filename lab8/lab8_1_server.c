@@ -8,12 +8,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include "massage.h"
 
 
-typedef struct message {
-    long type;
-    int new_timer_interval;
-} message_t;
 
 #define true 1
 #define false 0

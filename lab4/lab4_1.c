@@ -2,50 +2,57 @@
 #include <pthread.h>
 #include <fcntl.h>
 #include <sys/io.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
 
-void aboutScheduler();
+#define BLUE_TEXT_COLOR             "\x1b[34m"
+#define YELLOW_TEXT_COLOR           "\x1b[33m"
+#define WHITE_TEXT_COLOR            "\x1b[37m"
+
+void about_scheduler();
 
 void* thread_func(void *args) {
-    aboutScheduler();
+    about_scheduler();
     int fd = *((int*)(&args));
-    char str[255];
-    // while (read(fd, str, 255)) {
-    // 	write(1, str, 255);
-    // }
-    read(fd, str, 255);
-    write(1, str, 255);
+    char str[10] = {0};
+    ssize_t reading;
+    while (reading = read(fd, str, 10)) {
+    	write(1, str, reading);
+        // printf(BLUE_TEXT_COLOR"|fd = %d|"WHITE_TEXT_COLOR, fd);
+    }
     
-    int fclose_result = close(fd);
-    printf("close : %d\n", fclose_result);
-    return 0;
+    // int fclose_result = close(fd);
+    // printf("\nclose : %d (file %d)\n", fclose_result, fd);
+    pthread_exit(0);
+    // return 0;
 }
 
 int main(int argc, char* argv[]) {
     pthread_t thread;
-    int res;
+    // int res;
     int status;
     int fd = open(argv[1], O_RDONLY);
+    int fd_copy;
+    printf("fd = %d; fd_copy = %d\n", fd, fd_copy);
+    memcpy(&fd_copy, &fd, sizeof(int));
+    printf("fd = %d; fd_copy = %d\n", fd, fd_copy);
     int thread_creating_result = pthread_create(&thread, NULL, thread_func, (void*)fd);
+    printf("fd = %d; fd_copy = %d\n", fd, fd_copy);
     int join_result = pthread_join(thread, (void**)&status);
-
-    // char str[255];
-    // read(fd, str, 255);
-    // write(1, str, 255);
-    // printf("\n");
-
-    int file_close_result = 0xFF;
-    // file_close_result = close(fd);
-    res = fcntl(fd, F_GETFL);
-    printf("Close %d file %d errno %d\n", res, file_close_result, errno);
-    if (!(res == -1 && errno == EBADF)) {
-        file_close_result = close(fd);
+    printf("fd = %d; fd_copy = %d\n", fd, fd_copy);
+    __off64_t res = lseek(fd_copy, 0, SEEK_SET);
+    printf("fd = %d; fd_copy = %d\n", fd, fd_copy);
+    // printf("Close %ld file errno %d\n\n", res, errno);
+    if ((errno != EBADF) && (res != -1)) {
+        int file_close_result = close(fd_copy);
+        printf("Closeing file %d\n", file_close_result);
     }
     return 0;
 }
 
-void aboutScheduler()
+void about_scheduler()
 {	
 	int scheduler = sched_getscheduler(getpid());	
 	struct sched_param p;

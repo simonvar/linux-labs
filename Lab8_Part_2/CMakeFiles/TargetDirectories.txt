@@ -1,0 +1,3 @@
+/home/paladirka/Документы/Lab_8/Part_2/CMakeFiles/rebuild_cache.dir
+/home/paladirka/Документы/Lab_8/Part_2/CMakeFiles/lab_8_2.dir
+/home/paladirka/Документы/Lab_8/Part_2/CMakeFiles/edit_cache.dir

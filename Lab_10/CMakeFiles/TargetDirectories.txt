@@ -1,0 +1,10 @@
+/home/paladirka/Документы/linux-labs/Lab_10/CMakeFiles/rebuild_cache.dir
+/home/paladirka/Документы/linux-labs/Lab_10/CMakeFiles/edit_cache.dir
+/home/paladirka/Документы/linux-labs/Lab_10/Part_1/CMakeFiles/rebuild_cache.dir
+/home/paladirka/Документы/linux-labs/Lab_10/Part_1/CMakeFiles/lab_10_1_1.dir
+/home/paladirka/Документы/linux-labs/Lab_10/Part_1/CMakeFiles/edit_cache.dir
+/home/paladirka/Документы/linux-labs/Lab_10/Part_1/CMakeFiles/lab_10_1_2.dir
+/home/paladirka/Документы/linux-labs/Lab_10/Part_2/CMakeFiles/rebuild_cache.dir
+/home/paladirka/Документы/linux-labs/Lab_10/Part_2/CMakeFiles/edit_cache.dir
+/home/paladirka/Документы/linux-labs/Lab_10/Part_2/CMakeFiles/lab_10_2_1.dir
+/home/paladirka/Документы/linux-labs/Lab_10/Part_2/CMakeFiles/lab_10_2_2.dir

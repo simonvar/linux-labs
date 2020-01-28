@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/lab_10_2_2.dir/lab_10_2_2.cpp.o CMakeFiles/lab_10_2_2.dir/sem_helpers.cpp.o  -o lab_10_2_2 

@@ -7,6 +7,7 @@ void write_process_info(const char* filename, const char* tag);
 
 int main(int argc, char* argv[]) {
 
+	printf("Hello! I'm parent (%d)\n", getpid());
     if (argc < 5) {
         puts("Аргументы: путь к файлу, задержка для родительского процесса, задержка для fork, задержка для vfork.");
         return EINVAL;
@@ -15,15 +16,16 @@ int main(int argc, char* argv[]) {
 	// clear file
 	FILE* fp = fopen(argv[1], "w");
 	fclose(fp);
-
-	if (fork() == 0) {
+	pid_t pid = fork();
+	printf("Hello! I'm %d\n", getpid());
+	if (pid == 0) {
 		sleep(atoi(argv[3]));
 		write_process_info(argv[1], "CHILD 1");
 		_exit(0);
 	}
 
 	if (vfork() == 0) {
-        execv("lab3_ex.out", argv);
+        execv("qwerlab3_ex.out", argv);
 		puts("Невозможно запустить процесс lab3_ex.out");
 		_exit(ENOENT);
 	}

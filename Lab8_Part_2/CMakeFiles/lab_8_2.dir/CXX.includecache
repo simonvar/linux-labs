@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/paladirka/Документы/Lab_8/Part_2/lab_8_2.cpp
+algorithm
+-
+iostream
+-
+string
+-
+chrono
+-
+fstream
+-
+map
+-
+queue
+-
+ctime
+-
+unistd.h
+-
+sys/msg.h
+-
+
