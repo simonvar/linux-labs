@@ -5,7 +5,8 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <fcntl.h>
-
+#include <stdlib.h>
+#include <errno.h>
 
 #define true 1
 #define false 0
@@ -22,7 +23,7 @@
 
 static pid_t  pid_child1, pid_child2;
 static int fildes[2];
-static FILE *fout1, *fout2;
+// static FILE *fout1, *fout2;
 static int ready_first_fl = false;
 static int ready_second_fl = false;
 static void parent_sigterm(int);
@@ -47,48 +48,29 @@ int main(int argc, char *argv[])
     pipe(fildes);
     // fcntl(fildes[0], F_SETFL, 0);
 
+    char *argv_for_child[] = {"/home/paladirka/Документы/linux-labs/lab7/lab7_2_1.out", "NULL", "NULL", NULL};
+    argv_for_child[1] = malloc(sizeof(int)*2);
+    argv_for_child[1][0] = fildes[0];
+    argv_for_child[1][1] = fildes[1];
+
+    printf("Parent %d %d\n", fildes[0], fildes[1]);
+
     pid_child1 = fork();
     if (!pid_child1)
     {
-        printf(YELLOW_TEXT_COLOR BOLD_FONT "Сhild 1 started"WHITE_TEXT_COLOR NORMAL_FONT"\n");
-        struct sigaction sig_1_2;
-        struct sigaction sig_2_2;
-        struct sigaction sig_3_2;
-        sig_1_2.sa_handler = test_child;
-        sig_2_2.sa_handler = SIG_IGN;
-        sig_3_2.sa_handler = child_first_exit;
-        sigaction(SIGUSR1, &sig_1_2, NULL);
-        sigaction(SIGUSR2, &sig_2_2, NULL);
-        sigaction(SIGTERM, &sig_3_2, NULL);
-        // signal(SIGUSR1, test_child);
-        // signal(SIGUSR2, SIG_IGN);
-        // signal(SIGTERM, child_first_exit);
-        fout1 = fopen(FILE_NAME_OUTPUT_CHILD_1, "w");
-        kill(getppid(), SIGUSR1);
-        while(true) pause();
+        int res = execv("lab7_2_1.out", argv_for_child);
+        printf("res %d errno %d\n\n", res, errno);
+        printf("Невозможно запустить процесс lab7_2_1.out %d\n", res);
+		_exit(1);
     }
 
     pid_child2 = fork();
     if (!pid_child2)
     {
-
-        printf(BLUE_TEXT_COLOR BOLD_FONT "Child 2 started"WHITE_TEXT_COLOR NORMAL_FONT"\n");
-        struct sigaction sig_1_1;
-        struct sigaction sig_2_1;
-        struct sigaction sig_3_1;
-        sig_1_1.sa_handler = SIG_IGN;
-        sig_2_1.sa_handler = test_child;
-        sig_3_1.sa_handler = child_second_exit;
-        sigaction(SIGUSR1, &sig_1_1, NULL);
-        sigaction(SIGUSR2, &sig_2_1, NULL);
-        sigaction(SIGTERM, &sig_3_1, NULL);
-
-        // signal(SIGUSR1, SIG_IGN);
-        // signal(SIGUSR2, test_child);
-        // signal(SIGTERM, child_second_exit);
-        fout2 = fopen(FILE_NAME_OUTPUT_CHILD_2, "w");
-        kill(getppid(), SIGUSR2);
-        while(true) pause();
+        int res = execv("lab7_2_2.out", argv_for_child);
+        printf("res %d errno %d\n\n", res, errno);
+        printf("Невозможно запустить процесс lab7_2_2.out %d\n", res);
+		_exit(1);
     }
 
     struct sigaction sig1;
@@ -96,8 +78,8 @@ int main(int argc, char *argv[])
     sig1.sa_handler = ready_first;
     sig2.sa_handler = ready_second;
 
-    sigaction(SIGUSR2, &sig1, NULL);
-    sigaction(SIGUSR1, &sig2, NULL);
+    sigaction(SIGUSR1, &sig1, NULL);
+    sigaction(SIGUSR2, &sig2, NULL);
     printf("witing...");
     while(ready_first_fl == false || ready_second_fl == false)
     {
@@ -141,55 +123,4 @@ static void parent_sigterm(int signo)
 {
     kill(pid_child1, SIGTERM);
     kill(pid_child2, SIGTERM);
-}
-
-static void test_child(int signo)
-{
-    char ch;
-    int status = read(fildes[0], &ch, sizeof(ch));
-    FILE *output_file;
-    int out_signo;
-    const char *text_color;
-    int number_child;
-    if (signo == SIGUSR1)
-    {
-        output_file = fout1;
-        out_signo = SIGUSR2;
-        text_color = YELLOW_TEXT_COLOR;
-        number_child = 1;
-    }
-    else
-    {
-        output_file = fout2;
-        out_signo = SIGUSR1;
-        text_color = BLUE_TEXT_COLOR;
-        number_child = 2;
-    }
-    
-    if ((status == -1) || (ch == '\0'))
-    {
-        printf("kill SIGTERM\n");
-        kill(getppid(), SIGTERM);
-    }
-    if (status != 0)
-    {
-        printf("%sCHILD %d: %c%s\n", text_color, number_child, ch, WHITE_TEXT_COLOR);
-        fprintf(output_file, "%c", ch);
-    }
-    signal(signo, test_child);
-    kill(-getppid(), out_signo);
-}
-
-static void child_first_exit(int signo)
-{
-    printf("kill first\n");
-    fclose(fout1);
-    _exit(0);
-}
-
-static void child_second_exit(int signo)
-{
-    printf("kill second\n");
-    fclose(fout2);
-    _exit(0);
 }

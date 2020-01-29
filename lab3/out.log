@@ -1,18 +1,27 @@
-PARENT: pid - 12580
-PARENT: parent pid - 12538
-PARENT: session id - 12538
-PARENT: group id - 12580
-PARENT: real user id - 1000
-PARENT: effective user id - 1000
-PARENT: group id - 1000
-PARENT: effective group id - 1000
-
-CHILD 1: pid - 12581
-CHILD 1: parent pid - 1091
-CHILD 1: session id - 12538
-CHILD 1: group id - 12580
+CHILD 1: pid - 9336
+CHILD 1: parent pid - 9335
+CHILD 1: session id - 6646
+CHILD 1: group id - 9335
 CHILD 1: real user id - 1000
 CHILD 1: effective user id - 1000
 CHILD 1: group id - 1000
 CHILD 1: effective group id - 1000
+
+EXECV: pid - 9337
+EXECV: parent pid - 9335
+EXECV: session id - 6646
+EXECV: group id - 9335
+EXECV: real user id - 1000
+EXECV: effective user id - 1000
+EXECV: group id - 1000
+EXECV: effective group id - 1000
+
+PARENT: pid - 9335
+PARENT: parent pid - 6646
+PARENT: session id - 6646
+PARENT: group id - 9335
+PARENT: real user id - 1000
+PARENT: effective user id - 1000
+PARENT: group id - 1000
+PARENT: effective group id - 1000
 

@@ -25,7 +25,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (vfork() == 0) {
-        execv("qwerlab3_ex.out", argv);
+    	sleep(atoi(argv[4]));
+        execv("lab3_ex.out", argv);
 		puts("Невозможно запустить процесс lab3_ex.out");
 		_exit(ENOENT);
 	}
