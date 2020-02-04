@@ -90,6 +90,7 @@ void timer_handler(int) {
         // CRITICAL SECTION END
 
         processes_ready_flags[program_number] = false;
+        *whose_turn = another_program_number_1;
     } else {
         setitimer(ITIMER_REAL, nullptr, nullptr);
         should_run = false;
