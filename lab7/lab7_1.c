@@ -24,10 +24,11 @@ int main(int argc, char* argv[])
         printf("Ошибка. Программа должна принимать 2 аргумента. Имена входных файлов.\n");
     }
 
-    signal(SIGUSR1, close_zipper);    
     __pid_t child_id_1;
     __pid_t child_id_2;
-    pipe(pipedes);    
+    // Открыли канал
+    pipe(pipedes);
+    // Открыли выходной файл
     FILE *fout;
     fout = fopen(OUTPUT_FILE, "w");
     if((child_id_1 = fork()) == 0) 
@@ -40,7 +41,7 @@ int main(int argc, char* argv[])
             if (ch != EOF)
                 write(pipedes[1], &ch, 1);
         }
-        kill(getppid(), SIGUSR1);
+        close(pipedes[1]);
         fclose(fin1);
         _exit(0);
     }
@@ -57,13 +58,14 @@ int main(int argc, char* argv[])
                     write(pipedes[1], &ch, 1);
             }
             fclose(fin2);
-            kill(getppid(), SIGUSR1);
+            close(pipedes[1]);
             _exit(0);
         }
     }
 
     char ch;
     int buff;
+    close(pipedes[1]);
     while ((buff = read(pipedes[0], &ch, sizeof(ch))) > 0)
     {
         fprintf(fout, "%c", ch);
@@ -73,13 +75,4 @@ int main(int argc, char* argv[])
     close(pipedes[0]);
 
     return 0;
-}
-
-static void close_zipper(int signo)
-{
-    __counter++;
-    if (__counter == 2)
-    {
-        close(pipedes[1]);
-    }
 }

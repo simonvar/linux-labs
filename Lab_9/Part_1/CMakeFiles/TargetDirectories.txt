@@ -1,0 +1,3 @@
+/home/paladirka/Документы/linux-labs/Lab_9/Part_1/CMakeFiles/rebuild_cache.dir
+/home/paladirka/Документы/linux-labs/Lab_9/Part_1/CMakeFiles/lab_9_1.dir
+/home/paladirka/Документы/linux-labs/Lab_9/Part_1/CMakeFiles/edit_cache.dir

@@ -5,7 +5,6 @@
 void write_process_info(const char* filename, const char* tag);
 
 int main(int argc, char* argv[]) {
-    sleep(atoi(argv[4]));
     write_process_info(argv[1], "EXECV");
     return 0;
 }

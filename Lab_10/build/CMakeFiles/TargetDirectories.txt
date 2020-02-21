@@ -1,0 +1,10 @@
+/run/media/gikari/Lagann/Nextcloud/TEXHO/C4/S7/GNU/Lab_10/build/CMakeFiles/rebuild_cache.dir
+/run/media/gikari/Lagann/Nextcloud/TEXHO/C4/S7/GNU/Lab_10/build/CMakeFiles/edit_cache.dir
+/run/media/gikari/Lagann/Nextcloud/TEXHO/C4/S7/GNU/Lab_10/build/Part_1/CMakeFiles/rebuild_cache.dir
+/run/media/gikari/Lagann/Nextcloud/TEXHO/C4/S7/GNU/Lab_10/build/Part_1/CMakeFiles/lab_10_1_1.dir
+/run/media/gikari/Lagann/Nextcloud/TEXHO/C4/S7/GNU/Lab_10/build/Part_1/CMakeFiles/edit_cache.dir
+/run/media/gikari/Lagann/Nextcloud/TEXHO/C4/S7/GNU/Lab_10/build/Part_1/CMakeFiles/lab_10_1_2.dir
+/run/media/gikari/Lagann/Nextcloud/TEXHO/C4/S7/GNU/Lab_10/build/Part_2/CMakeFiles/rebuild_cache.dir
+/run/media/gikari/Lagann/Nextcloud/TEXHO/C4/S7/GNU/Lab_10/build/Part_2/CMakeFiles/lab_10_2_1.dir
+/run/media/gikari/Lagann/Nextcloud/TEXHO/C4/S7/GNU/Lab_10/build/Part_2/CMakeFiles/edit_cache.dir
+/run/media/gikari/Lagann/Nextcloud/TEXHO/C4/S7/GNU/Lab_10/build/Part_2/CMakeFiles/lab_10_2_2.dir

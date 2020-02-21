@@ -5,15 +5,12 @@
 #include <signal.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/types.h>
 #include <string.h>
 
 #define bool int
 #define false 0
 #define true 1
-
-static int iterations = 0;
-static int count = 0;
-static bool run_fl = true;
 
 void handler(int);
 void output(bool);
@@ -30,12 +27,12 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    iterations = atoi((const char*)argv[1]);
+    int iterations = atoi((const char*)argv[1]);
     int interval = atoi((const char*)argv[2]);
 
     printf("Iterations: %d | Interval: %d\n", iterations, interval);
 
-    signal(SIGTSTP, stopProgram);
+    signal(SIGTSTP, SIG_IGN);
     signal(SIGALRM, handler);
 
 
@@ -46,7 +43,7 @@ int main(int argc, char* argv[])
     timer.it_interval.tv_usec = 0;
     setitimer(ITIMER_REAL, &timer, NULL);
 
-    while (run_fl)
+    for(int i = 0; i < iterations; i++)
     {
         pause();
     }
@@ -60,13 +57,10 @@ void handler(int signo)
     if(!childPid)
 	{
         output(false);
-        return;
+        _exit(0);
     }
     waitpid(childPid, NULL, 0);
     output(true);
-    count++;
-    if(count >= iterations)
-        run_fl = false;
 }
 
 void output(bool isParent)
@@ -77,13 +71,4 @@ void output(bool isParent)
     char* format = "%d.%B.%Y %H:%M:%S";
     strftime(buffer, sizeof(buffer), format, timeinfo);
     printf("%s PID: %d TIME: %s\n", (isParent ? "Parent." : "Child."), getpid(), buffer);
-    if (!isParent)
-	{
-        _exit(0);
-	}
-}
-
-void stopProgram(int signum)
-{
-    printf("Подождите пока программа завершится\n");
 }

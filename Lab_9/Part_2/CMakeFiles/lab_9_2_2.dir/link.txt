@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/lab_9_2_2.dir/lab_9_2_2.cpp.o  -o lab_9_2_2 
